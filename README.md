@@ -9,15 +9,15 @@ standard format for the specification and documentation of programming
 languages. Extended BNF is defined in the [ISO/IEC 14977
 standard](http://www.iso.ch/cate/d26153.html).
 
-#### Usecases
-
-- Generation of valid rules based on a grammar
-- Exhaustive testing of parsers
-- Parsers fuzz testing
-- Gromit allows to use partial grammar and focus on a specific parts of parser
-(it is not possible with csmith or sqlsmith).
-- Make AFL dictionary https://lcamtuf.blogspot.ru/2015/01/afl-fuzz-making-up-grammar-with.html
-
 ## How-To Use
+
+```
+~$ cat ebnf/palindrome.ebnf
+palindrome = "a" | "b" | "aa" | "bb" | "a" palindrome "a" | "b" palindrome "b" .
+~$ ./gromit -file ebnf/palindrome.ebnf -start palindrome
+abba
+~$ ./gromit -file ebnf/palindrome.ebnf -start palindrome
+baab
+```
 
 See [screencast]().
