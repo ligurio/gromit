@@ -12,12 +12,8 @@ standard](http://www.iso.ch/cate/d26153.html).
 ## How-To Use
 
 ```
-~$ cat ebnf/palindrome.ebnf
-palindrome = "a" | "b" | "aa" | "bb" | "a" palindrome "a" | "b" palindrome "b" .
 ~$ ./gromit -file ebnf/palindrome.ebnf -start palindrome
-abba
-~$ ./gromit -file ebnf/palindrome.ebnf -start palindrome
-baab
+khbhk
 ```
 
 See [screencast]().
