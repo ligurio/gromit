@@ -1,1 +1,27 @@
-palindrome = "a" | "b" | "aa" | "bb" | "a" palindrome "a" | "b" palindrome "b" .
+palindrome = letter |
+		"a" palindrome "a" |
+		"b" palindrome "b" |
+		"c" palindrome "c" |
+		"d" palindrome "d" |
+		"e" palindrome "e" |
+		"f" palindrome "f" |
+		"g" palindrome "g" |
+		"h" palindrome "h" |
+		"i" palindrome "i" |
+		"j" palindrome "j" |
+		"k" palindrome "k" |
+		"l" palindrome "l" |
+		"m" palindrome "m" |
+		"n" palindrome "n" |
+		"p" palindrome "p" |
+		"q" palindrome "q" |
+		"r" palindrome "r" |
+		"s" palindrome "s" |
+		"t" palindrome "t" |
+		"u" palindrome "u" |
+		"v" palindrome "v" |
+		"w" palindrome "w" |
+		"x" palindrome "x" |
+		"y" palindrome "y" |
+		"z" palindrome "z" .
+letter     = "a" … "z" .
