@@ -1,0 +1,18 @@
+language: go
+
+go:
+  - 1.4
+
+install:
+  - go get -d -v
+  - go build -o gromit -v cmd/main.go
+
+deploy:
+  provider: releases
+  api_key: $GH_TOKEN
+  file: "gromit"
+  skip_cleanup: true
+  on:
+    repo: ligurio/gromit
+    tags: true
+    all_branches: true
