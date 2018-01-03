@@ -1,0 +1,1 @@
+palindrome = "a" | "b" | "aa" | "bb" | "a" palindrome "a" | "b" palindrome "b" .
