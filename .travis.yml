@@ -9,8 +9,7 @@ install:
 
 deploy:
   provider: releases
-  api_key:
-    secure: $GH_TOKEN
+  api_key: $GH_TOKEN
   file: "gromit"
   skip_cleanup: true
   on:
