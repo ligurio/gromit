@@ -20,7 +20,7 @@ func init() {
 	log.SetLevel(log.InfoLevel)
 }
 
-func Random(dst io.Writer, grammar ebnf.Grammar, start string, seed int64) error {
+func Random(dst io.Writer, grammar ebnf.Grammar, start string, seed int64, maxreps int) error {
 	production, err := grammar[start]
 	if !err {
 		return ErrStartNotFound
@@ -30,7 +30,7 @@ func Random(dst io.Writer, grammar ebnf.Grammar, start string, seed int64) error
 		rand.Seed(time.Now().UTC().UnixNano())
 	}
 
-	return random(dst, grammar, production.Expr, 0)
+	return random(dst, grammar, production.Expr, 0, maxreps)
 }
 
 func IsTerminal(expr ebnf.Expression) bool {
@@ -57,12 +57,10 @@ func findTerminals(exprs []ebnf.Expression) []ebnf.Expression {
 	return r
 }
 
-func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int) error {
+func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int, maxreps int) error {
 
 	var maxdepth int // FIXME
-	var maxreps int  // FIXME
 	maxdepth = 100
-	maxreps = 1
 
 	if expr == nil {
 		return nil
@@ -81,7 +79,7 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 		} else {
 			exprs = alt
 		}
-		err := random(dst, grammar, exprs[rand.Intn(len(exprs))], depth+1)
+		err := random(dst, grammar, exprs[rand.Intn(len(exprs))], depth+1, maxreps)
 		if err != nil {
 			return err
 		}
@@ -89,7 +87,7 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 	case *ebnf.Group:
 		log.Debug("Expression is group")
 		gr := expr.(*ebnf.Group)
-		err := random(dst, grammar, gr.Body, depth+1)
+		err := random(dst, grammar, gr.Body, depth+1, maxreps)
 		if err != nil {
 			return err
 		}
@@ -101,7 +99,7 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 		if p {
 			pad(dst)
 		}
-		err := random(dst, grammar, grammar[name.String], depth+1)
+		err := random(dst, grammar, grammar[name.String], depth+1, maxreps)
 		if err != nil {
 			return err
 		}
@@ -115,7 +113,7 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 		if depth > maxdepth && !IsTerminal(opt.Body) {
 			log.Debug("non-terminal omitted due to having exceeded recursion depth limit\n")
 		} else if PickBool() {
-			err := random(dst, grammar, opt.Body, depth+1)
+			err := random(dst, grammar, opt.Body, depth+1, maxreps)
 			if err != nil {
 				return err
 			}
@@ -124,7 +122,7 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 	case *ebnf.Production:
 		log.Debug("Expression is production")
 		prod := expr.(*ebnf.Production)
-		err := random(dst, grammar, prod.Expr, depth+1)
+		err := random(dst, grammar, prod.Expr, depth+1, maxreps)
 		if err != nil {
 			return err
 		}
@@ -147,9 +145,9 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 			log.Debug("Repetition omitted\n")
 		} else {
 			reps := rand.Intn(maxreps + 1)
-			log.Debug("Repetition: choose %d repetitions\n", reps)
+			log.Debug(reps, " times")
 			for i := 0; i < reps; i++ {
-				err := random(dst, grammar, rep.Body, depth+1)
+				err := random(dst, grammar, rep.Body, depth+1, maxreps)
 				if err != nil {
 					return err
 				}
@@ -160,7 +158,7 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 		log.Debug("Expression is sequence")
 		seq := expr.(ebnf.Sequence)
 		for _, e := range seq {
-			err := random(dst, grammar, e, depth+1)
+			err := random(dst, grammar, e, depth+1, maxreps)
 			if err != nil {
 				return err
 			}

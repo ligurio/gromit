@@ -20,7 +20,7 @@ var (
 	action     = flag.String("action", "fuzz", "action (possible values: fuzz and dict)")
 	start      = flag.String("start", "", "start string")
 	seed       = flag.Int64("seed", -1, "number used to initialize a pseudorandom number generator")
-	repetition = flag.Int("repetition", 100, "maximum number of repetitions")
+	maxreps    = flag.Int("maxreps", 10, "maximum number of repetitions")
 	depth      = flag.Int("depth", 30, "maximum depth")
 	padding    = flag.String("padding", " ", "non-terminal padding characters")
 	debug      = flag.Bool("debug", false, "enable verbosity")
@@ -66,7 +66,7 @@ func main() {
 	}
 
 	log.Debug("Grammar was successfully verified.")
-	err = gromit.Random(os.Stdout, grammar, *start, *seed)
+	err = gromit.Random(os.Stdout, grammar, *start, *seed, *maxreps)
 	if err != nil {
 		log.Fatal(err)
 	}
