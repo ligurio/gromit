@@ -1,6 +1,6 @@
 ## Gromit
 
-[![Build Status](https://travis-ci.org/ligurio/gromit.png?branch=master)](https://travis-ci.org/ligurio/gromit) [![Go Report Card](https://goreportcard.com/badge/github.com/ligurio/gromit)](https://goreportcard.com/report/github.com/ligurio/gromit)
+[![Testing](https://github.com/ligurio/gromit/actions/workflows/test.yml/badge.svg)](https://github.com/ligurio/gromit/actions/workflows/test.yml) [![Go Report Card](https://goreportcard.com/badge/github.com/ligurio/gromit)](https://goreportcard.com/report/github.com/ligurio/gromit)
 
 is a grammar fuzzer that is ideally suited for complex text and binary
 grammars. Gromit uses EBNF format for grammar specification. EBNF is an
