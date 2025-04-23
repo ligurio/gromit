@@ -2,12 +2,13 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"flag"
+	"fmt"
+	"os"
+
 	gromit "github.com/ligurio/gromit"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/exp/ebnf"
-	"os"
 )
 
 func init() {
@@ -16,14 +17,14 @@ func init() {
 }
 
 var (
-	name       = flag.String("filename", "", "filename with grammar")
-	action     = flag.String("action", "fuzz", "action (possible values: fuzz and dict)")
-	start      = flag.String("start", "", "start string")
-	seed       = flag.Int64("seed", -1, "number used to initialize a pseudorandom number generator")
-	maxreps    = flag.Int("maxreps", 10, "maximum number of repetitions")
-	depth      = flag.Int("depth", 30, "maximum depth")
-	padding    = flag.String("padding", " ", "non-terminal padding characters")
-	debug      = flag.Bool("debug", false, "enable verbosity")
+	name    = flag.String("filename", "", "filename with grammar")
+	action  = flag.String("action", "fuzz", "action (possible values: fuzz and dict)")
+	start   = flag.String("start", "", "start string")
+	seed    = flag.Int64("seed", -1, "number used to initialize a pseudorandom number generator")
+	maxreps = flag.Int("maxreps", 10, "maximum number of repetitions")
+	depth   = flag.Int("depth", 30, "maximum depth")
+	padding = flag.String("padding", " ", "non-terminal padding characters")
+	debug   = flag.Bool("debug", false, "enable verbosity")
 )
 
 func main() {
@@ -58,7 +59,7 @@ func main() {
 	}
 
 	if *action == "dict" {
-	err = gromit.Dict(os.Stdout, grammar, *start, *seed)
+		err = gromit.Dict(os.Stdout, grammar, *start, *seed)
 		if err != nil {
 			log.Fatal(err)
 		}
