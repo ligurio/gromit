@@ -3,11 +3,12 @@
 package gromit
 
 import (
+	"fmt"
 	"io"
+	"os"
 	"unicode"
 	"unicode/utf8"
 
-	log "github.com/sirupsen/logrus"
 	rand "math/rand"
 )
 
@@ -33,7 +34,8 @@ func PickRune(begin, end rune) rune {
 
 func PickInt32(begin, end int32) int32 {
 	if begin > end {
-		log.Fatal("PickInt32: invalid arguments: begin > end", begin, end)
+		fmt.Println("PickInt32: invalid arguments: begin > end", begin, end)
+		os.Exit(1)
 	}
 	diff := int64(end) - int64(begin)
 	return int32(int64(begin) + rand.Int63n(diff+1))

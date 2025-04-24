@@ -4,23 +4,18 @@ package gromit
 
 import (
 	"errors"
-	"golang.org/x/exp/ebnf"
 	"io"
-	"os"
+	"log"
 	"strings"
 	"time"
 
-	log "github.com/sirupsen/logrus"
+	"golang.org/x/exp/ebnf"
+
 	rand "math/rand"
 )
 
 var ErrStartNotFound = errors.New("Start production not found")
 var ErrBadRange = errors.New("Bad range")
-
-func init() {
-	log.SetOutput(os.Stdout)
-	log.SetLevel(log.InfoLevel)
-}
 
 func Random(dst io.Writer, grammar ebnf.Grammar, start string, seed int64, maxreps int) error {
 	production, err := grammar[start]
@@ -70,7 +65,6 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 
 	switch expr.(type) {
 	case ebnf.Alternative:
-		log.Debug("Expression is alternative")
 		alt := expr.(ebnf.Alternative)
 		var exprs []ebnf.Expression
 		if depth > maxdepth {
@@ -87,7 +81,6 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 		}
 
 	case *ebnf.Group:
-		log.Debug("Expression is group")
 		gr := expr.(*ebnf.Group)
 		err := random(dst, grammar, gr.Body, depth+1, maxreps)
 		if err != nil {
@@ -95,7 +88,6 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 		}
 
 	case *ebnf.Name:
-		log.Debug("Expression is name")
 		name := expr.(*ebnf.Name)
 		p := !IsTerminal(expr)
 		if p {
@@ -110,10 +102,9 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 		}
 
 	case *ebnf.Option:
-		log.Debug("Expression is option")
 		opt := expr.(*ebnf.Option)
 		if depth > maxdepth && !IsTerminal(opt.Body) {
-			log.Debug("non-terminal omitted due to having exceeded recursion depth limit\n")
+			fmt.Println("non-terminal omitted due to having exceeded recursion depth limit")
 		} else if PickBool() {
 			err := random(dst, grammar, opt.Body, depth+1, maxreps)
 			if err != nil {
@@ -122,7 +113,6 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 		}
 
 	case *ebnf.Production:
-		log.Debug("Expression is production")
 		prod := expr.(*ebnf.Production)
 		err := random(dst, grammar, prod.Expr, depth+1, maxreps)
 		if err != nil {
@@ -130,7 +120,6 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 		}
 
 	case *ebnf.Range:
-		log.Debug("Expression is range")
 		rang := expr.(*ebnf.Range)
 		ch, err := PickString(rang.Begin.String, rang.End.String)
 		if err != nil {
@@ -141,13 +130,11 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 		}
 
 	case *ebnf.Repetition:
-		log.Debug("Expression is repetition")
 		rep := expr.(*ebnf.Repetition)
 		if depth > maxdepth && !IsTerminal(rep.Body) {
-			log.Debug("Repetition omitted\n")
+			fmt.Println("Repetition omitted")
 		} else {
 			reps := rand.Intn(maxreps + 1)
-			log.Debug(reps, " times")
 			for i := 0; i < reps; i++ {
 				err := random(dst, grammar, rep.Body, depth+1, maxreps)
 				if err != nil {
@@ -157,7 +144,6 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 		}
 
 	case ebnf.Sequence:
-		log.Debug("Expression is sequence")
 		seq := expr.(ebnf.Sequence)
 		for _, e := range seq {
 			err := random(dst, grammar, e, depth+1, maxreps)
@@ -167,7 +153,6 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 		}
 
 	case *ebnf.Token:
-		log.Debug("Expression is token")
 		tok := expr.(*ebnf.Token)
 		if _, err := io.WriteString(dst, tok.String+" "); err != nil {
 			return err
@@ -198,7 +183,6 @@ func random1(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth in
 
 	switch expr.(type) {
 	case ebnf.Alternative:
-		log.Debug("Expression is alternative")
 		alt := expr.(ebnf.Alternative)
 		var exprs []ebnf.Expression
 		exprs = findTerminals(alt)
@@ -213,7 +197,6 @@ func random1(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth in
 		}
 
 	case *ebnf.Group:
-		log.Debug("Expression is group")
 		gr := expr.(*ebnf.Group)
 		err := random1(dst, grammar, gr.Body, depth+1)
 		if err != nil {
@@ -221,7 +204,6 @@ func random1(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth in
 		}
 
 	case *ebnf.Name:
-		log.Debug("Expression is name")
 		name := expr.(*ebnf.Name)
 		p := !IsTerminal(expr)
 		if p {
@@ -236,7 +218,6 @@ func random1(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth in
 		}
 
 	case *ebnf.Option:
-		log.Debug("Expression is option")
 		opt := expr.(*ebnf.Option)
 		err := random1(dst, grammar, opt.Body, depth+1)
 		if err != nil {
@@ -244,7 +225,6 @@ func random1(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth in
 		}
 
 	case *ebnf.Production:
-		log.Debug("Expression is production")
 		prod := expr.(*ebnf.Production)
 		err := random1(dst, grammar, prod.Expr, depth+1)
 		if err != nil {
@@ -252,13 +232,12 @@ func random1(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth in
 		}
 
 	case *ebnf.Range:
-		log.Debug("Expression is range")
+		// do nothing
 
 	case *ebnf.Repetition:
-		log.Debug("Expression is repetition")
+		// do nothing
 
 	case ebnf.Sequence:
-		log.Debug("Expression is sequence")
 		seq := expr.(ebnf.Sequence)
 		for _, e := range seq {
 			err := random1(dst, grammar, e, depth+1)
@@ -268,7 +247,6 @@ func random1(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth in
 		}
 
 	case *ebnf.Token:
-		log.Debug("Expression is token")
 		tok := expr.(*ebnf.Token)
 		if _, err := io.WriteString(dst, dictline(tok.String)+"\n"); err != nil {
 			return err
