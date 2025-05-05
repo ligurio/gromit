@@ -53,9 +53,7 @@ func IsCapital(s string) bool {
 	return unicode.IsUpper(ch)
 }
 
-func pad(dst io.Writer) error {
-	var padding string
-	padding = " " // FIXME
+func pad(dst io.Writer, padding string) error {
 	runes := []rune(padding)
 	if len(runes) == 0 {
 		return nil

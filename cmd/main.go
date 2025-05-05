@@ -60,7 +60,7 @@ func main() {
 	}
 
 	if *action == "dict" {
-		err = gromit.Dict(os.Stdout, grammar, *start, rng)
+		err = gromit.Dict(os.Stdout, grammar, *start, rng, *padding)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -68,7 +68,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = gromit.Random(os.Stdout, grammar, *start, rng, *maxreps)
+	err = gromit.Random(os.Stdout, grammar, *start, rng, *maxreps, *padding)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
