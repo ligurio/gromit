@@ -4,6 +4,7 @@ package gromit
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"strings"
@@ -159,7 +160,7 @@ func random(dst io.Writer, grammar ebnf.Grammar, expr ebnf.Expression, depth int
 		}
 
 	default:
-		log.Fatal("Bad expression", expr)
+		return fmt.Errorf("Bad expression %g", expr)
 	}
 
 	return nil
